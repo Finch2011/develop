@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارت عروسی رضا و مژگان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>کارت عروسی</h1>
+                <div class="names">رضا & مژگان</div>
+                
+                <div class="date-location">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i>
+                        جمعه ۶ شهریور ۱۴۰۴
+                    </div>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        سالن باغ رویاها، تهران
+                    </div>
+                </div>
+                
+                <div class="timer">
+                    <div class="timer-box">
+                        <div class="timer-value" id="days">00</div>
+                        <div class="timer-label">روز</div>
+                    </div>
+                    <div class="timer-box">
+                        <div class="timer-value" id="hours">00</div>
+                        <div class="timer-label">ساعت</div>
+                    </div>
+                    <div class="timer-box">
+                        <div class="timer-value" id="minutes">00</div>
+                        <div class="timer-label">دقیقه</div>
+                    </div>
+                    <div class="timer-box">
+                        <div class="timer-value" id="seconds">00</div>
+                        <div class="timer-label">ثانیه</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="section-title">تایید حضور</h2>
+                <p>لطفاً با پر کردن فرم زیر، حضور خود را در مراسم ما تأیید کنید.</p>
+                
+                <div class="rsvp-form">
+                    <div class="form-group">
+                        <label for="guest-name">نام و نام خانوادگی</label>
+                        <input type="text" id="guest-name" placeholder="نام شما">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>آیا در مراسم شرکت می‌کنید؟</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="coming" name="attendance" value="coming" checked>
+                                <label for="coming">حضور دارم</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="not-coming" name="attendance" value="not-coming">
+                                <label for="not-coming">متأسفانه نمی‌توانم</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="guest-count">تعداد نفرات</label>
+                        <select id="guest-count">
+                            <option value="0">نفرات</option>
+                            <option value="1">1 نفر</option>
+                            <option value="2">2 نفر</option>
+                            <option value="3">3 نفر</option>
+                            <option value="4">4 نفر</option>
+                            <option value="5">5 نفر</option>
+                            <option value="6">6 نفر</option>
+                            <option value="7">7 نفر</option>
+                            <option value="8">8 نفر</option>
+                        </select>
+                    </div>
+                    
+                    <button id="submit-rsvp">ثبت پاسخ</button>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/app.js"></script>
+</body>
+</html>
