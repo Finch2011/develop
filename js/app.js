@@ -1,204 +1,199 @@
-        // API endpoint
-        const API_URL = 'https://66f535759aa4891f2a2451d7.mockapi.io/user';
+const API_URL = 'https://66f535759aa4891f2a2451d7.mockapi.io/user';
+let allGuests = [];
+let filteredGuests = [];
+
+// DOM Elements
+const guestListEl = document.getElementById('guest-list');
+const guestCountEl = document.getElementById('guest-count');
+const deleteAllBtn = document.getElementById('delete-all-btn');
+const collapseBtn = document.getElementById('collapse-btn');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+
+// Fetch guests from API
+async function fetchGuests() {
+    try {
+        showLoading();
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('خطا در دریافت داده');
+        allGuests = await response.json();
+        filteredGuests = [...allGuests];
+        renderGuestList();
+    } catch (error) {
+        console.error('Error:', error);
+        showError('خطا در بارگذاری لیست مهمانان');
+    }
+}
+
+// Delete guest from API
+async function deleteGuest(id) {
+    try {
+        if (!confirm('آیا از حذف این مهمان اطمینان دارید؟')) return;
         
-        // تاریخ عروسی: ۶ شهریور ۱۴۰۴ (۲۸ آگوست ۲۰۲۵)
-        const weddingDate = new Date('2025-08-28T00:00:00');
-        
-        // تایمر شمارش معکوس
-        function updateTimer() {
-            const now = new Date();
-            const diff = weddingDate - now;
-            
-            if (diff <= 0) {
-                document.getElementById('days').textContent = '00';
-                document.getElementById('hours').textContent = '00';
-                document.getElementById('minutes').textContent = '00';
-                document.getElementById('seconds').textContent = '00';
-                return;
-            }
-            
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('days').textContent = days.toString().padStart(2, '0');
-            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        }
-        
-        setInterval(updateTimer, 1000);
-        updateTimer();
-        
-        // تابع برای ارسال داده به API
-        async function postGuestData(guestData) {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(guestData)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('خطا در ارسال داده');
-                }
-                
-                return await response.json();
-            } catch (error) {
-                console.error('Error:', error);
-                throw error;
-            }
-        }
-        
-        // تابع برای دریافت داده از API
-        async function fetchGuestList() {
-            try {
-                const response = await fetch(API_URL);
-                if (!response.ok) {
-                    throw new Error('خطا در دریافت داده');
-                }
-                const guests = await response.json();
-                return guests;
-            } catch (error) {
-                console.error('Error:', error);
-                throw error;
-            }
-        }
-        
-        // تابع برای نمایش لیست مهمانان
-        function displayGuestList(guests) {
-            const guestList = document.getElementById('guest-list');
-            guestList.innerHTML = '';
-            
-            // حذف موارد تکراری بر اساس نام
-            const uniqueGuests = [];
-            const seenNames = new Set();
-            
-            guests.forEach(guest => {
-                if (!seenNames.has(guest.name)) {
-                    seenNames.add(guest.name);
-                    uniqueGuests.push(guest);
-                }
-            });
-            
-            if (uniqueGuests.length === 0) {
-                guestList.innerHTML = '<div class="guest-item" style="justify-content: center;">هنوز مهمانی ثبت نشده است</div>';
-                return;
-            }
-            
-            uniqueGuests.forEach(guest => {
-                const guestItem = document.createElement('div');
-                guestItem.classList.add('guest-item');
-                
-                const guestName = document.createElement('span');
-                guestName.classList.add('guest-name');
-                guestName.textContent = guest.name;
-                
-                const guestStatus = document.createElement('span');
-                guestStatus.classList.add('guest-status');
-                
-                if (guest.attendance === 'coming') {
-                    guestStatus.classList.add('status-coming');
-                    guestStatus.textContent = guest.guestCount > 0 ? 
-                        `حضور دارد (${guest.guestCount} همراه)` : 'حضور دارد';
-                } else {
-                    guestStatus.classList.add('status-not-coming');
-                    guestStatus.textContent = 'عدم حضور';
-                }
-                
-                guestItem.appendChild(guestName);
-                guestItem.appendChild(guestStatus);
-                guestList.appendChild(guestItem);
-            });
-        }
-        
-        // مدیریت فرم نظر سنجی
-        document.getElementById('submit-rsvp').addEventListener('click', async function() {
-            const name = document.getElementById('guest-name').value.trim();
-            const attendance = document.querySelector('input[name="attendance"]:checked').value;
-            const guestCount = parseInt(document.getElementById('guest-count').value);
-            
-            if (!name) {
-                alert('لطفاً نام خود را وارد کنید');
-                return;
-            }
-            
-            const submitBtn = document.getElementById('submit-rsvp');
-            const submitText = document.getElementById('submit-text');
-            const submitLoading = document.getElementById('submit-loading');
-            
-            // نمایش اسپینر لودینگ
-            submitText.style.display = 'none';
-            submitLoading.style.display = 'inline-block';
-            submitBtn.disabled = true;
-            
-            try {
-                // ارسال داده به API
-                const guestData = {
-                    name: name,
-                    attendance: attendance,
-                    guestCount: guestCount,
-                    createdAt: new Date().toISOString()
-                };
-                
-                await postGuestData(guestData);
-                
-                // دریافت لیست به‌روز شده
-                const guests = await fetchGuestList();
-                displayGuestList(guests);
-                
-                // پاک کردن فرم
-                document.getElementById('guest-name').value = '';
-                document.getElementById('coming').checked = true;
-                document.getElementById('guest-count').value = '0';
-                
-                // نمایش پیام موفقیت
-                showSuccessMessage('پاسخ شما با موفقیت ثبت شد!');
-            } catch (error) {
-                showSuccessMessage('خطا در ثبت پاسخ. لطفاً دوباره تلاش کنید.', true);
-            } finally {
-                // مخفی کردن اسپینر لودینگ
-                submitText.style.display = 'inline-block';
-                submitLoading.style.display = 'none';
-                submitBtn.disabled = false;
-            }
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE'
         });
+        if (!response.ok) throw new Error('خطا در حذف مهمان');
         
-        // نمایش پیام موفقیت/خطا
-        function showSuccessMessage(message, isError = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = message;
-            messageDiv.style.color = isError ? '#c0392b' : '#27ae60';
-            messageDiv.style.marginTop = '1rem';
-            messageDiv.style.textAlign = 'center';
-            messageDiv.style.animation = 'fadeIn 0.5s ease-out';
-            
-            const form = document.querySelector('.rsvp-form');
-            const oldMessage = form.querySelector('.message');
-            if (oldMessage) oldMessage.remove();
-            
-            form.appendChild(messageDiv);
-            messageDiv.classList.add('message');
-            
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
+        allGuests = allGuests.filter(guest => guest.id !== id);
+        filteredGuests = filteredGuests.filter(guest => guest.id !== id);
+        renderGuestList();
+    } catch (error) {
+        console.error('Error:', error);
+        showError('خطا در حذف مهمان');
+    }
+}
+
+// Delete all guests
+async function deleteAllGuests() {
+    if (!confirm('آیا از حذف تمام مهمانان اطمینان دارید؟')) return;
+    
+    try {
+        showLoading();
+        // Delete one by one (mock API doesn't support bulk delete)
+        for (const guest of filteredGuests) {
+            await fetch(`${API_URL}/${guest.id}`, {
+                method: 'DELETE'
+            });
         }
         
-        // بارگذاری اولیه لیست مهمانان
-        async function loadInitialGuestList() {
-            try {
-                const guests = await fetchGuestList();
-                displayGuestList(guests);
-            } catch (error) {
-                console.error('Error loading initial guest list:', error);
-                const guestList = document.getElementById('guest-list');
-                guestList.innerHTML = '<div class="guest-item" style="justify-content: center;">خطا در بارگذاری لیست مهمانان</div>';
-            }
-        }
-        
-        // اجرای اولیه
-        document.addEventListener('DOMContentLoaded', loadInitialGuestList);
+        allGuests = allGuests.filter(g => !filteredGuests.some(fg => fg.id === g.id));
+        filteredGuests = [];
+        renderGuestList();
+    } catch (error) {
+        console.error('Error:', error);
+        showError('خطا در حذف مهمانان');
+    }
+}
+
+// Search guests
+function searchGuests() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    
+    if (searchTerm === '') {
+        filteredGuests = [...allGuests];
+    } else {
+        filteredGuests = allGuests.filter(guest => 
+            guest.name.toLowerCase().includes(searchTerm) ||
+            (guest.attendance === 'coming' ? 'حضور دارد' : 'عدم حضور').includes(searchTerm)
+        );
+    }
+    
+    renderGuestList();
+}
+
+// Render guest list
+function renderGuestList() {
+    if (filteredGuests.length === 0) {
+        guestListEl.innerHTML = `
+            <div class="guest-list-header">
+                <div>نام مهمان</div>
+                <div>وضعیت</div>
+                <div>تعداد همراهان</div>
+                <div class="action">عملیات</div>
+            </div>
+            <div class="${allGuests.length === 0 ? 'no-guests' : 'no-results'}">
+                ${allGuests.length === 0 ? 'هیچ مهمانی ثبت نشده است' : 'مهمانی با این مشخصات یافت نشد'}
+            </div>
+        `;
+        guestCountEl.textContent = '0';
+        return;
+    }
+    
+    let html = `
+        <div class="guest-list-header">
+            <div>نام مهمان</div>
+            <div>وضعیت</div>
+            <div>تعداد همراهان</div>
+            <div class="action">عملیات</div>
+        </div>
+    `;
+    
+    filteredGuests.forEach(guest => {
+        html += `
+            <div class="guest-item">
+                <div>${guest.name || 'بدون نام'}</div>
+                <div>
+                    <span class="status-badge ${guest.attendance === 'coming' ? 'status-coming' : 'status-not-coming'}">
+                        ${guest.attendance === 'coming' ? 'حضور دارد' : 'عدم حضور'}
+                    </span>
+                </div>
+                <div>${guest.guestCount || 0}</div>
+                <div class="action">
+                    <button class="delete-btn" data-id="${guest.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    guestListEl.innerHTML = html;
+    guestCountEl.textContent = filteredGuests.length;
+    
+    // Add event listeners to delete buttons
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            deleteGuest(id);
+        });
+    });
+}
+
+// Toggle collapse/expand
+function toggleCollapse() {
+    guestListEl.classList.toggle('collapsed');
+    const icon = collapseBtn.querySelector('i');
+    const text = collapseBtn.querySelector('span');
+    
+    if (guestListEl.classList.contains('collapsed')) {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+        text.textContent = 'باز کردن لیست';
+    } else {
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+        text.textContent = 'جمع کردن لیست';
+    }
+}
+
+// Show loading state
+function showLoading() {
+    guestListEl.innerHTML = `
+        <div class="guest-list-header">
+            <div>نام مهمان</div>
+            <div>وضعیت</div>
+            <div>تعداد همراهان</div>
+            <div class="action">عملیات</div>
+        </div>
+        <div class="no-guests" style="display: flex; justify-content: center; align-items: center;">
+            <div class="loading"></div>
+            <span>در حال بارگذاری...</span>
+        </div>
+    `;
+}
+
+// Show error message
+function showError(message) {
+    const errorEl = document.createElement('div');
+    errorEl.className = 'no-results';
+    errorEl.textContent = message;
+    
+    const currentError = guestListEl.querySelector('.no-guests, .no-results');
+    if (currentError) {
+        guestListEl.replaceChild(errorEl, currentError);
+    } else {
+        guestListEl.appendChild(errorEl);
+    }
+}
+
+// Event listeners
+deleteAllBtn.addEventListener('click', deleteAllGuests);
+collapseBtn.addEventListener('click', toggleCollapse);
+searchBtn.addEventListener('click', searchGuests);
+searchInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') searchGuests();
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', fetchGuests);
