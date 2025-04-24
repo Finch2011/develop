@@ -3,102 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>کارت عروسی رضا و مژگان</title>
+    <title>مدیریت مهمانان عروسی</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --secondary: #e84393;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --accent: #fd79a8;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .guest-management {
+            margin-top: 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .search-box button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+        
+        .guest-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .guest-list {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .guest-list-header {
+            display: flex;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            font-weight: bold;
+        }
+        
+        .guest-list-header div {
+            flex: 1;
+        }
+        
+        .guest-list-header .action {
+            flex: 0.5;
+            text-align: center;
+        }
+        
+        .guest-item {
+            display: flex;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .guest-item:last-child {
+            border-bottom: none;
+        }
+        
+        .guest-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .guest-item div {
+            flex: 1;
+        }
+        
+        .guest-item .action {
+            flex: 0.5;
+            text-align: center;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-coming {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+        
+        .status-not-coming {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+        }
+        
+        .delete-btn {
+            color: #e74c3c;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(142, 68, 173, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .no-guests {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #e74c3c;
+        }
+        
+        .collapsed .guest-item:not(:first-child) {
+            display: none;
+        }
+        
+        .collapse-toggle {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .guest-count {
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <div class="header">
-                <h1>کارت عروسی</h1>
-                <div class="names">رضا & مژگان</div>
-                
-                <div class="date-location">
-                    <div class="date">
-                        <i class="far fa-calendar-alt"></i>
-                        پنجشنبه ۶ شهریور ۱۴۰۴
-                    </div>
-                    <div class="location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        سالن باغ رویاها، تهران
-                    </div>
-                </div>
-                
-                <div class="timer">
-                    <div class="timer-box">
-                        <div class="timer-value" id="days">00</div>
-                        <div class="timer-label">روز</div>
-                    </div>
-                    <div class="timer-box">
-                        <div class="timer-value" id="hours">00</div>
-                        <div class="timer-label">ساعت</div>
-                    </div>
-                    <div class="timer-box">
-                        <div class="timer-value" id="minutes">00</div>
-                        <div class="timer-label">دقیقه</div>
-                    </div>
-                    <div class="timer-box">
-                        <div class="timer-value" id="seconds">00</div>
-                        <div class="timer-label">ثانیه</div>
-                    </div>
-                </div>
+        <h1>مدیریت لیست مهمانان عروسی</h1>
+        
+        <div class="guest-management">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="جستجوی مهمان...">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
             </div>
             
-            <div class="content">
-                <h2 class="section-title">تایید حضور</h2>
-                <p>لطفاً با پر کردن فرم زیر، حضور خود را در مراسم ما تأیید کنید.</p>
-                
-                <div class="rsvp-form">
-                    <div class="form-group">
-                        <label for="guest-name">نام و نام خانوادگی</label>
-                        <input type="text" id="guest-name" placeholder="نام شما">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>آیا در مراسم شرکت می‌کنید؟</label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="coming" name="attendance" value="coming" checked>
-                                <label for="coming">حضور دارم</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="not-coming" name="attendance" value="not-coming">
-                                <label for="not-coming">متأسفانه نمی‌توانم</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="guest-count">تعداد همراهان</label>
-                        <select id="guest-count">
-                            <option value="0">بدون همراه</option>
-                            <option value="1">1 نفر</option>
-                            <option value="2">2 نفر</option>
-                            <option value="3">3 نفر</option>
-                            <option value="4">4 نفر</option>
-                            <option value="5">5 نفر</option>
-                            <option value="6">6 نفر</option>
-                            <option value="7">7 نفر</option>
-                            <option value="8">8 نفر</option>
-                        </select>
-                    </div>
-                    
-                    <button id="submit-rsvp">
-                        <span id="submit-text">ثبت پاسخ</span>
-                        <span id="submit-loading" class="loading" style="display: none;"></span>
-                    </button>
+            <div class="guest-actions">
+                <button id="collapse-btn" class="collapse-toggle">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>جمع کردن لیست</span>
+                </button>
+                <div>
+                    <span class="guest-count" id="guest-count">0</span> مهمان یافت شد
+                </div>
+                <button id="delete-all-btn" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> حذف همه
+                </button>
+            </div>
+            
+            <div class="guest-list" id="guest-list">
+                <div class="guest-list-header">
+                    <div>نام مهمان</div>
+                    <div>وضعیت</div>
+                    <div>تعداد همراهان</div>
+                    <div class="action">عملیات</div>
                 </div>
                 
-                <h2 class="section-title" style="margin-top: 3rem;">لیست مهمانان</h2>
-                <div class="guest-list" id="guest-list">
-                    <!-- لیست مهمانان از API اینجا لود می‌شود -->
-                </div>
+                <div class="no-guests">در حال بارگذاری لیست مهمانان...</div>
             </div>
         </div>
     </div>
-    <script src="./js/app.js"></script>
 
+    <script>
+        const API_URL = 'https://66f535759aa4891f2a2451d7.mockapi.io/user';
+        let allGuests = [];
+        let filteredGuests = [];
+        
+        // DOM Elements
+        const guestListEl = document.getElementById('guest-list');
+        const guestCountEl = document.getElementById('guest-count');
+        const deleteAllBtn = document.getElementById('delete-all-btn');
+        const collapseBtn = document.getElementById('collapse-btn');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        
+        // Fetch guests from API
+        async function fetchGuests() {
+            try {
+                showLoading();
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('خطا در دریافت داده');
+                allGuests = await response.json();
+                filteredGuests = [...allGuests];
+                renderGuestList();
+            } catch (error) {
+                console.error('Error:', error);
+                showError('خطا در بارگذاری لیست مهمانان');
+            }
+        }
+        
+        // Delete guest from API
+        async function deleteGuest(id) {
+            try {
+                if (!confirm('آیا از حذف این مهمان اطمینان دارید؟')) return;
+                
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('خطا در حذف مهمان');
+                
+                allGuests = allGuests.filter(guest => guest.id !== id);
+                filteredGuests = filteredGuests.filter(guest => guest.id !== id);
+                renderGuestList();
+            } catch (error) {
+                console.error('Error:', error);
+                showError('خطا در حذف مهمان');
+            }
+        }
+        
+        // Delete all guests
+        async function deleteAllGuests() {
+            if (!confirm('آیا از حذف تمام مهمانان اطمینان دارید؟')) return;
+            
+            try {
+                showLoading();
+                // Delete one by one (mock API doesn't support bulk delete)
+                for (const guest of filteredGuests) {
+                    await fetch(`${API_URL}/${guest.id}`, {
+                        method: 'DELETE'
+                    });
+                }
+                
+                allGuests = allGuests.filter(g => !filteredGuests.some(fg => fg.id === g.id));
+                filteredGuests = [];
+                renderGuestList();
+            } catch (error) {
+                console.error('Error:', error);
+                showError('خطا در حذف مهمانان');
+            }
+        }
+        
+        // Search guests
+        function searchGuests() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm === '') {
+                filteredGuests = [...allGuests];
+            } else {
+                filteredGuests = allGuests.filter(guest => 
+                    guest.name.toLowerCase().includes(searchTerm) ||
+                    (guest.attendance === 'coming' ? 'حضور دارد' : 'عدم حضور').includes(searchTerm)
+                );
+            }
+            
+            renderGuestList();
+        }
+        
+        // Render guest list
+        function renderGuestList() {
+            if (filteredGuests.length === 0) {
+                guestListEl.innerHTML = `
+                    <div class="guest-list-header">
+                        <div>نام مهمان</div>
+                        <div>وضعیت</div>
+                        <div>تعداد همراهان</div>
+                        <div class="action">عملیات</div>
+                    </div>
+                    <div class="${allGuests.length === 0 ? 'no-guests' : 'no-results'}">
+                        ${allGuests.length === 0 ? 'هیچ مهمانی ثبت نشده است' : 'مهمانی با این مشخصات یافت نشد'}
+                    </div>
+                `;
+                guestCountEl.textContent = '0';
+                return;
+            }
+            
+            let html = `
+                <div class="guest-list-header">
+                    <div>نام مهمان</div>
+                    <div>وضعیت</div>
+                    <div>تعداد همراهان</div>
+                    <div class="action">عملیات</div>
+                </div>
+            `;
+            
+            filteredGuests.forEach(guest => {
+                html += `
+                    <div class="guest-item">
+                        <div>${guest.name || 'بدون نام'}</div>
+                        <div>
+                            <span class="status-badge ${guest.attendance === 'coming' ? 'status-coming' : 'status-not-coming'}">
+                                ${guest.attendance === 'coming' ? 'حضور دارد' : 'عدم حضور'}
+                            </span>
+                        </div>
+                        <div>${guest.guestCount || 0}</div>
+                        <div class="action">
+                            <button class="delete-btn" data-id="${guest.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            guestListEl.innerHTML = html;
+            guestCountEl.textContent = filteredGuests.length;
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    deleteGuest(id);
+                });
+            });
+        }
+        
+        // Toggle collapse/expand
+        function toggleCollapse() {
+            guestListEl.classList.toggle('collapsed');
+            const icon = collapseBtn.querySelector('i');
+            const text = collapseBtn.querySelector('span');
+            
+            if (guestListEl.classList.contains('collapsed')) {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+                text.textContent = 'باز کردن لیست';
+            } else {
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+                text.textContent = 'جمع کردن لیست';
+            }
+        }
+        
+        // Show loading state
+        function showLoading() {
+            guestListEl.innerHTML = `
+                <div class="guest-list-header">
+                    <div>نام مهمان</div>
+                    <div>وضعیت</div>
+                    <div>تعداد همراهان</div>
+                    <div class="action">عملیات</div>
+                </div>
+                <div class="no-guests" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="loading"></div>
+                    <span>در حال بارگذاری...</span>
+                </div>
+            `;
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorEl = document.createElement('div');
+            errorEl.className = 'no-results';
+            errorEl.textContent = message;
+            
+            const currentError = guestListEl.querySelector('.no-guests, .no-results');
+            if (currentError) {
+                guestListEl.replaceChild(errorEl, currentError);
+            } else {
+                guestListEl.appendChild(errorEl);
+            }
+        }
+        
+        // Event listeners
+        deleteAllBtn.addEventListener('click', deleteAllGuests);
+        collapseBtn.addEventListener('click', toggleCollapse);
+        searchBtn.addEventListener('click', searchGuests);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') searchGuests();
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchGuests);
+    </script>
 </body>
 </html>
