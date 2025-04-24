@@ -1,6 +1,6 @@
 :root {
-    --primary: #7744ad;
-    --secondary: #9e43e8;
+    --primary: #8e44ad;
+    --secondary: #e84393;
     --light: #f8f9fa;
     --dark: #343a40;
     --accent: #fd79a8;
@@ -32,7 +32,7 @@ body {
 .card {
     background: white;
     border-radius: 16px;
-    box-shadow: 10px 10px 30px gray;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     margin-bottom: 2rem;
     transition: transform 0.3s ease;
@@ -278,6 +278,20 @@ button:hover {
 .status-not-coming {
     background-color: rgba(231, 76, 60, 0.1);
     color: #c0392b;
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(142, 68, 173, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* انیمیشن‌ها */
